@@ -1,3 +1,6 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
 import {
     createTRPCClient,
     httpLink,
@@ -5,23 +8,22 @@ import {
     loggerLink,
     splitLink,
 } from '@trpc/client';
-import type { AppRouter } from '../server-trpc/';
-import { EventSourcePolyfill } from 'event-source-polyfill';
+import type { AppRouter } from '../server';
 
 const trpc = createTRPCClient<AppRouter>({
     links: [
         splitLink({
             condition: (op) => op.type === 'subscription',
             true: httpSubscriptionLink({
-                url: 'http://localhost:3000',
-                EventSource: EventSourcePolyfill,
+                url: 'http://localhost:6789',
             }),
             false: httpLink({
-                url: 'http://localhost:3000',
+                url: 'http://localhost:6789',
             }),
         }),
     ],
 });
+
 async function main() {
     trpc.onUserCreate.subscribe(123, {
         onData: data => {
@@ -34,3 +36,15 @@ async function main() {
     console.log(await trpc.userCreate.mutate({ name: 'Homieee' }));
 }
 main().catch(console.error)
+
+console.log('what up')
+console.log('oy2')
+const rootEl = document.getElementById('root');
+if (rootEl) {
+  const root = ReactDOM.createRoot(rootEl);
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+  );
+}

@@ -1,3 +1,5 @@
+// From trpc docs here:
+// https://trpc.io/docs/server/subscriptions#example-with-zod-v4
 import type { TrackedEnvelope } from '@trpc/server';
 import { isTrackedEnvelope, tracked } from '@trpc/server';
 import { z } from 'zod';

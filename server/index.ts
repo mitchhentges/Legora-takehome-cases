@@ -2,7 +2,8 @@ import * as events from 'node:events';
 import { initTRPC } from '@trpc/server';
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import { z } from 'zod';
-import {zAsyncIterable} from "./zAsyncIterable";
+import {zAsyncIterable} from "./zAsyncIterable.js";
+import http from 'http';
 
 const t = initTRPC.create();
 const router = t.router;
@@ -54,9 +55,33 @@ const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
-const server = createHTTPServer({
+const trpc = createHTTPServer({
     router: appRouter,
+    responseMeta() {
+        return {
+            headers: {
+                'Access-Control-Allow-Origin': 'http://localhost:3000',
+                'Access-Control-Allow-Methods': '*',
+                'Access-Control-Allow-Headers': '*',
+                'Access-Control-Allow-Credentials': 'true',
+            },
+        };
+    },
+});
+const server = http.createServer((req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', '*');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    res.setHeader('Access-Control-Allow-Credentials', '*');
+
+    if (req.method === 'OPTIONS') {
+        res.writeHead(204);
+        res.end();
+        return;
+    }
+
+    trpc.emit('request', req, res);
 });
 
-console.log("Running on http://127.0.0.1:3000")
-server.listen(3000);
+console.log("Running on http://127.0.0.1:6789")
+server.listen(6789);

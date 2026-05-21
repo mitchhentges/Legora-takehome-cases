@@ -1,9 +1,14 @@
 {
   "compilerOptions": {
-    "module": "nodenext",
+    "rootDir": "server",
+    "outDir": "dist/server",
+    "module": "node20",
     "target": "esnext",
     "strict": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-  }
+    "incremental": true,
+    "types": ["node"]
+  },
+  "include": ["server"],
 }
