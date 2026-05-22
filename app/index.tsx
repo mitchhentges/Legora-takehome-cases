@@ -8,7 +8,7 @@ import {
     loggerLink,
     splitLink,
 } from '@trpc/client';
-import type { AppRouter } from '../server';
+import type { AppRouter } from '../shared';
 
 const trpc = createTRPCClient<AppRouter>({
     links: [
