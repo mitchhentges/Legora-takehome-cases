@@ -1,10 +1,11 @@
-import { Navigate } from "react-router-dom";
+import {Navigate, useNavigate} from "react-router-dom";
 import {trpcTanstack, trpcReact} from "./trpc.ts";
 import {useQuery} from "@tanstack/react-query";
 import {useMessageSubscription} from "./messageSubscription.ts";
 import React, {useState} from "react";
 
 export default () => {
+    const navigate = useNavigate();
     const chatState = useQuery(trpcTanstack.chatState.queryOptions());
     const sendMessageMutation = trpcReact.sendMessage.useMutation();
     useMessageSubscription();
@@ -39,9 +40,13 @@ export default () => {
 
     console.log(chatState.data)
     const ownEmail = chatState.data.ownEmail;
+    // TODO signOut should invalidate auth token server-side
     return <div>
         <div className="flex flex-col h-screen w-screen">
-            <div>Current user: {chatState.data.ownEmail}</div>
+            <div>
+                Current user: {chatState.data.ownEmail}
+                <input type="button" value="Sign out :(" className="ml-4 px-4 py-2 border cursor-pointer" onClick={() => navigate("/")} />
+            </div>
             <div className="flex-1 flex divide-x divide-gray-300 border-t border-b border-gray-300">
                 <div className="w-1/5 divide-y divide-gray-300">
                     {Object.keys(chatState.data.chats).map(fromEmail => <div onClick={() => setCurrentPartner(fromEmail)} key={fromEmail} className={`py-2 hover:bg-gray-100 cursor-pointer ${fromEmail === currentPartner ? "bg-blue-600" : ""}`}>{fromEmail}</div>)}

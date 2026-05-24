@@ -25,17 +25,6 @@ export type ChatState = {
 }
 const websocketMessageQueue = new events.EventEmitter()
 
-setInterval(() => {
-    const timestamp = new Date();
-    const message = {
-        recipient: "a@a",
-        author: "b@b",
-        content: timestamp.toString(),
-        sentAt: timestamp,
-    };
-    // websocketMessageQueue.emit("add", message)
-}, 1000);
-
 export const appRouter = router({
     login: t.procedure
         .input(z.object({ email: z.string(), password: z.string() }))
