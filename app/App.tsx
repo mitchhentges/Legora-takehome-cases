@@ -1,13 +1,18 @@
-import React from "react";
 import './App.css';
+import LoginForm from "./LoginForm.tsx";
+import {
+    QueryClientProvider,
+} from '@tanstack/react-query'
+import {queryClient} from "./trpc.ts";
 
 const App = () => {
-  return (
-    <div className="content">
-      <h1>Rsbuild with React</h1>
-      <p>Start building amazing things with Rsbuild.</p>
-    </div>
-  );
+    return (
+        <QueryClientProvider client={queryClient}>
+            <div className="bg-gray-100 min-h-screen p-8">
+                <LoginForm />
+            </div>
+        </QueryClientProvider>
+    );
 };
 
 export default App;

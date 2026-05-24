@@ -1,15 +1,16 @@
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import { appRouter } from '../shared/index.js';
+import { createTrpcContext } from '../shared/context.js';
 import http from 'http';
 
 const trpc = createHTTPServer({
     router: appRouter,
+    createContext: createTrpcContext,
 });
 const server = http.createServer((req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', '*');
-    res.setHeader('Access-Control-Allow-Headers', '*');
-    res.setHeader('Access-Control-Allow-Credentials', '*');
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Headers', 'content-type');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
 
     if (req.method === 'OPTIONS') {
         res.writeHead(204);

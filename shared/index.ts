@@ -2,14 +2,22 @@ import * as events from 'node:events';
 import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
 import {zAsyncIterable} from "./zAsyncIterable.js";
+import type {Context} from "./context";
 
-const t = initTRPC.create();
+const t = initTRPC.context<Context>().create();
 const router = t.router;
 
 type User = { id: string; name: string };
 const ee = new events.EventEmitter()
 
 export const appRouter = router({
+    login: t.procedure
+        .input(z.object({ email: z.string(), password: z.string() }))
+        .mutation(async ( {input, ctx}) => {
+            console.log('cookie', ctx.req.headers['cookie'])
+            ctx.res.setHeader('Set-Cookie', 'legora_token=foo; HttpOnly')
+            return true;
+        }),
     userList: t.procedure
         .query(async () => {
             const users: User[] = [{ id: '1', name: 'Katt' }];

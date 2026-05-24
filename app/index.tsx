@@ -1,28 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import {
-    createTRPCClient,
-    httpLink,
-    httpSubscriptionLink,
-    loggerLink,
-    splitLink,
-} from '@trpc/client';
-import type { AppRouter } from '../shared';
-
-const trpc = createTRPCClient<AppRouter>({
-    links: [
-        splitLink({
-            condition: (op) => op.type === 'subscription',
-            true: httpSubscriptionLink({
-                url: 'http://localhost:6789',
-            }),
-            false: httpLink({
-                url: 'http://localhost:6789',
-            }),
-        }),
-    ],
-});
+import {trpc} from "./trpc.ts";
 
 async function main() {
     trpc.onUserCreate.subscribe(123, {
@@ -37,8 +16,6 @@ async function main() {
 }
 main().catch(console.error)
 
-console.log('what up')
-console.log('oy2')
 const rootEl = document.getElementById('root');
 if (rootEl) {
   const root = ReactDOM.createRoot(rootEl);
