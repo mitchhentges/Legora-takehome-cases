@@ -8,15 +8,26 @@ import { serialize as serializeCookie } from "cookie";
 const t = initTRPC.context<Context>().create();
 const router = t.router;
 
-type User = { id: string; name: string };
-const ee = new events.EventEmitter()
+type UserEmail = string;
+export type Message = {
+    to: UserEmail;
+    from: UserEmail;
+    content: string;
+    sentAt: Date;
+}
+const websocketMessageQueue = new events.EventEmitter()
 
 setInterval(() => {
-    let stuff = {name: "asdf", id: (new Date()).toString()};
-    console.log("adding user", stuff)
-    ee.emit("add", stuff)
+    const timestamp = new Date();
+    const message = {
+        to: "a@a",
+        from: "b@b",
+        content: timestamp.toString(),
+        sentAt: timestamp,
+    };
+    console.log("adding message", message)
+    websocketMessageQueue.emit("add", message)
 }, 1000);
-
 
 export const appRouter = router({
     login: t.procedure
@@ -28,50 +39,27 @@ export const appRouter = router({
             }));
             return true;
         }),
-    currentUser: t.procedure
+    currentUserEmail: t.procedure
         .query(async ( {ctx}) => {
             if (!ctx.userEmail) {
-                return "NOPE";
+                return null;
             }
             return ctx.userEmail;
         }),
-    userList: t.procedure
-        .query(async () => {
-            const users: User[] = [{ id: '1', name: 'Katt' }];
-            return users;
-        }),
-    userById: t.procedure
-        .input(z.string())
-        .query(async (opts) => {
-            const { input } = opts;
-            const user: User = { id: input, name: 'Katt' };
-            return user;
-        }),
-    userCreate: t.procedure
-        .input(z.object({ name: z.string() }))
-        .mutation(async (opts) => {
-            console.log('user created btw')
-            const { input } = opts;
-            const user: User = { id: '1', ...input };
-            ee.emit('add', user);
-            return user;
-        }),
-    onUserCreate: t.procedure
+    onMessage: t.procedure
         .output(zAsyncIterable({
             yield: z.object({
-                a: z.string(),
-                b: z.string(),
+                to: z.string(),
+                from: z.string(),
+                content: z.string(),
+                sentAt: z.date(),
             })
         }))
         .subscription(async function* (opts) {
-            for await (const [data] of events.on(ee, 'add', {
+            for await (const [data] of events.on(websocketMessageQueue, 'add', {
                 signal: opts.signal
             })) {
-                const user = data as User;
-                yield {
-                    a: user.name,
-                    b: user.id
-                };
+                yield data as Message;
             }
         })
 });

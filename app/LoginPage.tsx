@@ -23,7 +23,7 @@ export default () => {
         if (!result) {
             setHasLoginFailed(true);
         } else {
-            queryClient.removeQueries({ queryKey: trpcTanstack.currentUser.queryKey() });
+            queryClient.removeQueries({ queryKey: trpcTanstack.currentUserEmail.queryKey() });
             console.log("Removed queries")
             navigate("/chats");
         }
