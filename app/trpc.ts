@@ -7,6 +7,7 @@ import {
 import type { AppRouter } from '../shared';
 import {createTRPCOptionsProxy} from "@trpc/tanstack-react-query";
 import {QueryClient} from "@tanstack/react-query";
+import { createTRPCReact } from "@trpc/react-query";
 
 export const trpc = createTRPCClient<AppRouter>({
     links: [
@@ -22,7 +23,9 @@ export const trpc = createTRPCClient<AppRouter>({
     ],
 });
 export const queryClient = new QueryClient();
+createTRPCReact
 export const trpcTanstack = createTRPCOptionsProxy<AppRouter>({
     client: trpc,
     queryClient,
 });
+export const trpcReact = createTRPCReact<AppRouter>();

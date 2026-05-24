@@ -11,6 +11,13 @@ const router = t.router;
 type User = { id: string; name: string };
 const ee = new events.EventEmitter()
 
+setInterval(() => {
+    let stuff = {name: "asdf", id: (new Date()).toString()};
+    console.log("adding user", stuff)
+    ee.emit("add", stuff)
+}, 1000);
+
+
 export const appRouter = router({
     login: t.procedure
         .input(z.object({ email: z.string(), password: z.string() }))
@@ -50,7 +57,6 @@ export const appRouter = router({
             return user;
         }),
     onUserCreate: t.procedure
-        .input(z.number())
         .output(zAsyncIterable({
             yield: z.object({
                 a: z.string(),
