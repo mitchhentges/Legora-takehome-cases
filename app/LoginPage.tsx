@@ -37,7 +37,7 @@ export default () => {
             </div>
             <div>
                 <label htmlFor="password" id="password">Password:</label>
-                <input name="password" type="password" className="border" defaultValue="foo"></input>
+                <input name="password" type="password" className="border" defaultValue="testing_a"></input>
             </div>
             <button type="submit"
                     className={`m-4 w-60 rounded-lg ${hasLoginFailed ? "bg-red-600" : "bg-blue-600"} py-3 font-semibold text-white cursor-pointer`}>Sign in

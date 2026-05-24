@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import {trpcTanstack, trpcReact} from "./trpc.ts";
-import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {useQuery} from "@tanstack/react-query";
 import {useMessageSubscription} from "./messageSubscription.ts";
 import React, {useState} from "react";
 
@@ -26,7 +26,7 @@ export default () => {
         const message = inputMessage;
         setInputMessage("");
         sendMessageMutation.mutate({
-            to: currentPartner,
+            recipient: currentPartner,
             content: message,
         })
     }
@@ -37,6 +37,7 @@ export default () => {
         }
     };
 
+    console.log(chatState.data)
     const ownEmail = chatState.data.ownEmail;
     return <div>
         <div className="flex flex-col h-screen w-screen">
@@ -47,7 +48,7 @@ export default () => {
                 </div>
                 <div className="flex-1 divide-y divide-gray-100">
                     {chatState.data.chats[currentPartner].map(message => {
-                        return <div className={`flex ${message.from === ownEmail ? "justify-end" : ""}`} key={message.sentAt}>{message.content}</div>
+                        return <div className={`flex ${message.author === ownEmail ? "justify-end" : ""}`} key={message.sentAt.toString()}>{message.content}</div>
                     })}
                 </div>
             </div>
