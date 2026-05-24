@@ -57,8 +57,8 @@ export const appRouter = router({
                         content: "yooo",
                         sentAt: new Date(1),
                     }, {
-                        to: ctx.userEmail,
-                        from: "b@b",
+                        to: "b@b",
+                        from: ctx.userEmail,
                         content: "My homie",
                         sentAt: new Date(2),
                     }],
@@ -76,6 +76,11 @@ export const appRouter = router({
                     }]
                 }
             };
+        }),
+    sendMessage: t.procedure
+        .input(z.object({ content: z.string(), to: z.string() }))
+        .mutation(async ( {input, ctx}) => {
+            console.log(`[${ctx.userEmail} => ${input.to}] ${input.content}`)
         }),
     onMessage: t.procedure
         .output(zAsyncIterable({
