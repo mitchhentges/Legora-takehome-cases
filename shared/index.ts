@@ -62,6 +62,12 @@ export const appRouter = router({
             if (!ctx.userEmail) {
                 return null;
             }
+            const allUsers = await ctx.db.anyFirst(
+                sql.unsafe`
+                    SELECT email FROM users
+                    WHERE email != ${ctx.userEmail}
+                `
+            ) as UserEmail[];
             const messages = await ctx.db.any(
                 sql.unsafe`
                 SELECT author, recipient, content, sent_at AS "sentAt" FROM messages
@@ -69,13 +75,18 @@ export const appRouter = router({
                 ORDER BY sent_at;
                 `
             ) as Message[];
+
+            const chats = allUsers.reduce<Record<UserEmail, []>>((chats, email) => {
+                chats[email] = [];
+                return chats;
+            }, {});
             return {
                 ownEmail: ctx.userEmail,
                 chats: messages.reduce<Record<UserEmail, Message[]>>((chats, msg) => {
                     const key = msg.author === ctx.userEmail ? msg.recipient : msg.author;
                     chats[key] = [...(chats[key] || []), msg];
                     return chats;
-                }, {}),
+                }, chats),
             }
         }),
     sendMessage: t.procedure
@@ -105,12 +116,14 @@ export const appRouter = router({
                 sentAt: z.date(),
             })
         }))
-        .subscription(async function* (opts) {
+        .subscription(async function* ({signal, ctx}) {
             for await (const [data] of events.on(websocketMessageQueue, 'add', {
-                signal: opts.signal
+                signal
             })) {
-                console.log("Emitting message: " + data.content)
-                yield data as Message;
+                const message = data as Message;
+                if (message.author === ctx.userEmail || message.recipient === ctx.userEmail) {
+                    yield message;
+                }
             }
         })
 });
