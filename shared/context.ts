@@ -1,9 +1,7 @@
 import http from "http";
 
-export const createTrpcContext = ({ req, res }: {
+export type Context = {
     req: http.IncomingMessage,
     res: http.ServerResponse<http.IncomingMessage>,
-}) => {
-    return { req, res };
+    userEmail: string,
 };
-export type Context = Awaited<ReturnType<typeof createTrpcContext>>;

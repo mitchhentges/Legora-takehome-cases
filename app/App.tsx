@@ -1,16 +1,21 @@
 import './App.css';
-import LoginForm from "./LoginForm.tsx";
+import LoginPage from "./LoginPage.tsx";
 import {
     QueryClientProvider,
 } from '@tanstack/react-query'
 import {queryClient} from "./trpc.ts";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ChatsPage from "./ChatsPage.tsx";
 
 const App = () => {
     return (
         <QueryClientProvider client={queryClient}>
-            <div className="bg-gray-100 min-h-screen p-8">
-                <LoginForm />
-            </div>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<LoginPage />} />
+                    <Route path="/chats" element={<ChatsPage />} />
+                </Routes>
+            </BrowserRouter>
         </QueryClientProvider>
     );
 };

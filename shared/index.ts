@@ -2,7 +2,8 @@ import * as events from 'node:events';
 import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
 import {zAsyncIterable} from "./zAsyncIterable.js";
-import type {Context} from "./context";
+import type {Context} from "./context.js";
+import { serialize as serializeCookie } from "cookie";
 
 const t = initTRPC.context<Context>().create();
 const router = t.router;
@@ -15,8 +16,17 @@ export const appRouter = router({
         .input(z.object({ email: z.string(), password: z.string() }))
         .mutation(async ( {input, ctx}) => {
             console.log('cookie', ctx.req.headers['cookie'])
-            ctx.res.setHeader('Set-Cookie', 'legora_token=foo; HttpOnly')
+            ctx.res.setHeader('Set-Cookie', serializeCookie("auth_token", input.email, {
+                httpOnly: true
+            }));
             return true;
+        }),
+    currentUser: t.procedure
+        .query(async ( {ctx}) => {
+            if (!ctx.userEmail) {
+                return "NOPE";
+            }
+            return ctx.userEmail;
         }),
     userList: t.procedure
         .query(async () => {
