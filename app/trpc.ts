@@ -23,7 +23,6 @@ export const trpc = createTRPCClient<AppRouter>({
     ],
 });
 export const queryClient = new QueryClient();
-createTRPCReact
 export const trpcTanstack = createTRPCOptionsProxy<AppRouter>({
     client: trpc,
     queryClient,

@@ -1,26 +1,24 @@
 import { Navigate } from "react-router-dom";
-import {trpcTanstack} from "./trpc.ts";
-import {useQuery} from "@tanstack/react-query";
+import {trpcTanstack, trpcReact} from "./trpc.ts";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {useRef} from "react";
 import {useMessageSubscription} from "./messageSubscription.ts";
-import type { Message } from "../shared";
 
 export default () => {
-    const currentUser = useQuery(trpcTanstack.currentUserEmail.queryOptions());
+    const chatState = useQuery(trpcTanstack.chatState.queryOptions());
     useMessageSubscription();
 
-    const messages = useQuery<Message[]>({
-        queryKey: ["messages"],
-        queryFn: async () => [],
-    });
-
-    if (currentUser.isLoading) return "Loadin' ...";
-    if (!currentUser.data) {
+    if (chatState.isLoading) return "Loadin' ...";
+    if (!chatState.data) {
         return <Navigate to="/" />;
     }
 
-    console.log("messages", messages.data)
     return <div>
-        Nice chats dogg: {currentUser.data}
-        {messages.data?.map((message, i) => <div key={i}>{message.sentAt + " => " + message.content}</div>)}
+        Current user: {chatState.data.ownEmail}
+        {Object.entries(chatState.data.chats)?.map(([from, messages]) => (
+            <div key={from}>
+                {messages.map(message => <div key={message.sentAt}>{message.from}: {message.content}</div>)}
+            </div>
+        ))}
     </div>
 }

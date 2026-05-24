@@ -15,6 +15,10 @@ export type Message = {
     content: string;
     sentAt: Date;
 }
+export type ChatState = {
+    ownEmail: UserEmail,
+    chats: Record<UserEmail, Message[]>,
+}
 const websocketMessageQueue = new events.EventEmitter()
 
 setInterval(() => {
@@ -39,12 +43,39 @@ export const appRouter = router({
             }));
             return true;
         }),
-    currentUserEmail: t.procedure
-        .query(async ( {ctx}) => {
+    chatState: t.procedure
+        .query(async ( {ctx}): Promise<ChatState | null> => {
             if (!ctx.userEmail) {
                 return null;
             }
-            return ctx.userEmail;
+            return {
+                ownEmail: ctx.userEmail,
+                chats: {
+                    "b@b": [{
+                        to: ctx.userEmail,
+                        from: "b@b",
+                        content: "yooo",
+                        sentAt: new Date(1),
+                    }, {
+                        to: ctx.userEmail,
+                        from: "b@b",
+                        content: "My homie",
+                        sentAt: new Date(2),
+                    }],
+                    "d@d": [],
+                    "c@c": [{
+                        to: ctx.userEmail,
+                        from: "c@c",
+                        content: "gruggg",
+                        sentAt: new Date(3),
+                    }, {
+                        to: ctx.userEmail,
+                        from: "c@c",
+                        content: ":))",
+                        sentAt: new Date(4),
+                    }]
+                }
+            };
         }),
     onMessage: t.procedure
         .output(zAsyncIterable({
