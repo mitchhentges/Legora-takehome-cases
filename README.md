@@ -12,7 +12,7 @@ In the following commands, if you don't have `pnpm`, you can use `npm` instead.
 |------|-----------|
 | a@a  | testing_a |
 | b@b  | testing_b |
-| c_c  | testing_c |
+| c@c  | testing_c |
 
 > [!TIP]
 > You can log in as multiple users at once if you open `http://localhost:3000` in a new "Private Browsing" window,
