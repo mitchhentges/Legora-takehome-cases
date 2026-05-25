@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev:app": "rsbuild",
-    "dev:server": "cd server && concurrently \"tsc -w\" \"node --watch ../dist/server/index.js\""
+    "dev:server": "cd server && concurrently \"tsc -w\" \"node --watch ../dist/server/index.js\"",
+    "dev": "concurrently \"npm run dev:app\" \"npm run dev:server\""
   },
   "keywords": [],
   "author": "",
